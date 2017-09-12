@@ -3,16 +3,16 @@ pragma solidity 0.4.11;
 
 /**
  * @title Ownable
- * @dev The Ownable contract has an owner address, and provides basic authorization control 
- * functions, this simplifies the implementation of "user permissions". 
+ * @dev 带有Owner的合约需要有一个owner地址, 并提供基本的鉴权控制函数，
+ * 这简化了用户许可的实现 
  */
 contract Ownable {
   address public owner;
 
 
   /** 
-   * @dev The Ownable constructor sets the original `owner` of the contract to the sender
-   * account.
+   * @dev 合约的构造函数，把消息发送方的地址设置为合约的初始owner
+   *
    */
   function Ownable() {
     owner = msg.sender;
@@ -20,7 +20,7 @@ contract Ownable {
 
 
   /**
-   * @dev Throws if called by any account other than the owner. 
+   * @dev 除owner之外的任何账户调用，都会抛出异常
    */
   modifier onlyOwner() {
     if (msg.sender != owner) {
@@ -31,8 +31,8 @@ contract Ownable {
 
 
   /**
-   * @dev Allows the current owner to transfer control of the contract to a newOwner.
-   * @param newOwner The address to transfer ownership to. 
+   * @dev 允许当前owner转移合约的控制权给另外一个人
+   * @param newOwner 新的owner地址
    */
   function transferOwnership(address newOwner) onlyOwner {
     if (newOwner != address(0)) {
@@ -46,7 +46,7 @@ contract Ownable {
 
 /**
  * @title Authorizable
- * @dev Allows to authorize access to certain function calls
+ * @dev 允许授权给某些函数调用
  * 
  * ABI
  * [{"constant":true,"inputs":[{"name":"authorizerIndex","type":"uint256"}],"name":"getAuthorizer","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_addr","type":"address"}],"name":"addAuthorized","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"_addr","type":"address"}],"name":"isAuthorized","outputs":[{"name":"","type":"bool"}],"payable":false,"type":"function"},{"inputs":[],"payable":false,"type":"constructor"}]
@@ -57,7 +57,7 @@ contract Authorizable {
   mapping(address => uint) authorizerIndex;
 
   /**
-   * @dev Throws if called by any account tat is not authorized. 
+   * @dev 未被授权的账户调用，将抛出异常
    */
   modifier onlyAuthorized {
     require(isAuthorized(msg.sender));
@@ -65,7 +65,7 @@ contract Authorizable {
   }
 
   /**
-   * @dev Contructor that authorizes the msg.sender. 
+   * @dev 构造函数：授权给msg.sender
    */
   function Authorizable() {
     authorizers.length = 2;
@@ -74,26 +74,26 @@ contract Authorizable {
   }
 
   /**
-   * @dev Function to get a specific authorizer
-   * @param authorizerIndex index of the authorizer to be retrieved.
-   * @return The address of the authorizer.
+   * @dev 函数：获取一个授权人
+   * @param authorizerIndex是想要获取的授权索引，从0开始
+   * @return 获取授权人的地址
    */
   function getAuthorizer(uint authorizerIndex) external constant returns(address) {
     return address(authorizers[authorizerIndex + 1]);
   }
 
   /**
-   * @dev Function to check if an address is authorized
-   * @param _addr the address to check if it is authorized.
-   * @return boolean flag if address is authorized.
+   * @dev 函数：检测地址是否以被授权
+   * @param _addr 地址：想要检测是否被授权的地址
+   * @return 布尔类型：地址是否被授权
    */
   function isAuthorized(address _addr) constant returns(bool) {
     return authorizerIndex[_addr] > 0;
   }
 
   /**
-   * @dev Function to add a new authorizer
-   * @param _addr the address to add as a new authorizer.
+   * @dev 函数：添加一个新的授权人
+   * @param _addr 将要被添加为一个新授权人的地址
    */
   function addAuthorized(address _addr) external onlyAuthorized {
     authorizerIndex[_addr] = authorizers.length;
@@ -105,7 +105,7 @@ contract Authorizable {
 
 /**
  * @title ExchangeRate
- * @dev Allows updating and retrieveing of Conversion Rates for PAY tokens
+ * @dev 允许更新并获取PAY与其他货币的兑换比率
  *
  * ABI
  * [{"constant":false,"inputs":[{"name":"_symbol","type":"string"},{"name":"_rate","type":"uint256"}],"name":"updateRate","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"data","type":"uint256[]"}],"name":"updateRates","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"_symbol","type":"string"}],"name":"getRate","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"bytes32"}],"name":"rates","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"payable":false,"type":"function"},{"anonymous":false,"inputs":[{"indexed":false,"name":"timestamp","type":"uint256"},{"indexed":false,"name":"symbol","type":"bytes32"},{"indexed":false,"name":"rate","type":"uint256"}],"name":"RateUpdated","type":"event"}]
@@ -117,9 +117,9 @@ contract ExchangeRate is Ownable {
   mapping(bytes32 => uint) public rates;
 
   /**
-   * @dev Allows the current owner to update a single rate.
-   * @param _symbol The symbol to be updated. 
-   * @param _rate the rate for the symbol. 
+   * @dev 云讯当前的owner更新一条兑换比率
+   * @param _symbol 将要的被更新的代币符合 
+   * @param _rate 代币的兑换比率. 
    */
   function updateRate(string _symbol, uint _rate) public onlyOwner {
     rates[sha3(_symbol)] = _rate;
@@ -127,8 +127,8 @@ contract ExchangeRate is Ownable {
   }
 
   /**
-   * @dev Allows the current owner to update multiple rates.
-   * @param data an array that alternates sha3 hashes of the symbol and the corresponding rate . 
+   * @dev 允许当前owner更新多条兑换比率
+   * @param data 数组：sha3哈希计算代币符号与对应兑换比率交替存在
    */
   function updateRates(uint[] data) public onlyOwner {
     if (data.length % 2 > 0)
@@ -144,8 +144,8 @@ contract ExchangeRate is Ownable {
   }
 
   /**
-   * @dev Allows the anyone to read the current rate.
-   * @param _symbol the symbol to be retrieved. 
+   * @dev 允许任意用户获取当前某种代币的兑换比率
+   * @param _symbol 代币符号 
    */
   function getRate(string _symbol) public constant returns(uint) {
     return rates[sha3(_symbol)];
@@ -154,7 +154,7 @@ contract ExchangeRate is Ownable {
 }
 
 /**
- * Math operations with safety checks
+ * 带有安全监测的数学运算
  */
 library SafeMath {
   function mul(uint a, uint b) internal returns (uint) {
@@ -207,7 +207,7 @@ library SafeMath {
 
 /**
  * @title ERC20Basic
- * @dev Simpler version of ERC20 interface
+ * @dev ERC20接口的简化版本
  * @dev see https://github.com/ethereum/EIPs/issues/20
  */
 contract ERC20Basic {
@@ -236,7 +236,7 @@ contract ERC20 is ERC20Basic {
 
 /**
  * @title Basic token
- * @dev Basic version of StandardToken, with no allowances. 
+ * @dev StandardToken的基础版本, 不带有allowance功能。
  */
 contract BasicToken is ERC20Basic {
   using SafeMath for uint;
@@ -244,7 +244,7 @@ contract BasicToken is ERC20Basic {
   mapping(address => uint) balances;
 
   /**
-   * @dev Fix for the ERC20 short address attack.
+   * @dev 修复ERC20的短地址攻击。
    */
   modifier onlyPayloadSize(uint size) {
      if(msg.data.length < size + 4) {
@@ -254,9 +254,9 @@ contract BasicToken is ERC20Basic {
   }
 
   /**
-  * @dev transfer token for a specified address
-  * @param _to The address to transfer to.
-  * @param _value The amount to be transferred.
+  * @dev 转移token给指定地址
+  * @param _to 接收token的地址
+  * @param _value 转移的数量
   */
   function transfer(address _to, uint _value) onlyPayloadSize(2 * 32) {
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -265,9 +265,9 @@ contract BasicToken is ERC20Basic {
   }
 
   /**
-  * @dev Gets the balance of the specified address.
-  * @param _owner The address to query the the balance of. 
-  * @return An uint representing the amount owned by the passed address.
+  * @dev 查看指定地址的token余额
+  * @param _owner 想要查看的地址
+  * @return 用基本token的基本单位，返回传入地址的token数量
   */
   function balanceOf(address _owner) constant returns (uint balance) {
     return balances[_owner];
@@ -281,9 +281,9 @@ contract BasicToken is ERC20Basic {
 /**
  * @title Standard ERC20 token
  *
- * @dev Implemantation of the basic standart token.
+ * @dev 标准化token的实现.
  * @dev https://github.com/ethereum/EIPs/issues/20
- * @dev Based on code by FirstBlood: https://github.com/Firstbloodio/token/blob/master/smart_contract/FirstBloodToken.sol
+ * @dev 参考了FirstBlood的代码: https://github.com/Firstbloodio/token/blob/master/smart_contract/FirstBloodToken.sol
  */
 contract StandardToken is BasicToken, ERC20 {
 
@@ -291,10 +291,10 @@ contract StandardToken is BasicToken, ERC20 {
 
 
   /**
-   * @dev Transfer tokens from one address to another
-   * @param _from address The address which you want to send tokens from
-   * @param _to address The address which you want to transfer to
-   * @param _value uint the amout of tokens to be transfered
+   * @dev 从一个地址转移token到另一个地址
+   * @param _from 迁出地址
+   * @param _to 嵌入地址
+   * @param _value 转移的token数量
    */
   function transferFrom(address _from, address _to, uint _value) onlyPayloadSize(3 * 32) {
     var _allowance = allowed[_from][msg.sender];
@@ -309,9 +309,9 @@ contract StandardToken is BasicToken, ERC20 {
   }
 
   /**
-   * @dev Aprove the passed address to spend the specified amount of tokens on beahlf of msg.sender.
-   * @param _spender The address which will spend the funds.
-   * @param _value The amount of tokens to be spent.
+   * @dev 批准传入地址可以代表msg.sender（函数的调用者）去花费一定数量的token
+   * @param _spender 将要花费资金的地址
+   * @param _value 花费资金的数量
    */
   function approve(address _spender, uint _value) {
 
@@ -326,10 +326,10 @@ contract StandardToken is BasicToken, ERC20 {
   }
 
   /**
-   * @dev Function to check the amount of tokens than an owner allowed to a spender.
-   * @param _owner address The address which owns the funds.
-   * @param _spender address The address which will spend the funds.
-   * @return A uint specifing the amount of tokens still avaible for the spender.
+   * @dev 返回owner允许spender花费的token数量
+   * @param _owner 拥有资金的账户地址
+   * @param _spender 准备花掉资金的账户地址
+   * @return 返回spender可以花掉的资金数量
    */
   function allowance(address _owner, address _spender) constant returns (uint remaining) {
     return allowed[_owner][_spender];
@@ -344,9 +344,9 @@ contract StandardToken is BasicToken, ERC20 {
 
 /**
  * @title Mintable token
- * @dev Simple ERC20 Token example, with mintable token creation
+ * @dev 简单的ERC20代码示例，带有代币的可铸造机制
  * @dev Issue: * https://github.com/OpenZeppelin/zeppelin-solidity/issues/120
- * Based on code by TokenMarketNet: https://github.com/TokenMarketNet/ico/blob/master/contracts/MintableToken.sol
+ * 基于TokenMarketNet的代码: https://github.com/TokenMarketNet/ico/blob/master/contracts/MintableToken.sol
  */
 
 contract MintableToken is StandardToken, Ownable {
@@ -363,10 +363,10 @@ contract MintableToken is StandardToken, Ownable {
   }
 
   /**
-   * @dev Function to mint tokens
-   * @param _to The address that will recieve the minted tokens.
-   * @param _amount The amount of tokens to mint.
-   * @return A boolean that indicates if the operation was successful.
+   * @dev 铸造token
+   * @param _to 接收新铸造token的地址
+   * @param _amount 铸造的数量
+   * @return 返回铸造是否成功
    */
   function mint(address _to, uint _amount) onlyOwner canMint returns (bool) {
     totalSupply = totalSupply.add(_amount);
@@ -376,8 +376,8 @@ contract MintableToken is StandardToken, Ownable {
   }
 
   /**
-   * @dev Function to stop minting new tokens.
-   * @return True if the operation was successful.
+   * @dev 停止铸造新token
+   * @return 假如操作成功，返回True
    */
   function finishMinting() onlyOwner returns (bool) {
     mintingFinished = true;
@@ -389,7 +389,7 @@ contract MintableToken is StandardToken, Ownable {
 
 /**
  * @title PayToken
- * @dev The main PAY token contract
+ * @dev PAY代币合约
  * 
  * ABI 
  * [{"constant":true,"inputs":[],"name":"mintingFinished","outputs":[{"name":"","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_value","type":"uint256"}],"name":"approve","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_from","type":"address"},{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transferFrom","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"startTrading","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_amount","type":"uint256"}],"name":"mint","outputs":[{"name":"","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"tradingStarted","outputs":[{"name":"","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"finishMinting","outputs":[{"name":"","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transfer","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"},{"name":"_spender","type":"address"}],"name":"allowance","outputs":[{"name":"remaining","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"payable":false,"type":"function"},{"anonymous":false,"inputs":[{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Mint","type":"event"},{"anonymous":false,"inputs":[],"name":"MintFinished","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"}]
@@ -403,7 +403,7 @@ contract PayToken is MintableToken {
   bool public tradingStarted = false;
 
   /**
-   * @dev modifier that throws if trading has not started yet
+   * @dev modifier 假如token还未允许交易，则抛出异常
    */
   modifier hasStartedTrading() {
     require(tradingStarted);
@@ -411,26 +411,26 @@ contract PayToken is MintableToken {
   }
 
   /**
-   * @dev Allows the owner to enable the trading. This can not be undone
+   * @dev 允许owner启动允许token交易，不可回退
    */
   function startTrading() onlyOwner {
     tradingStarted = true;
   }
 
   /**
-   * @dev Allows anyone to transfer the PAY tokens once trading has started
-   * @param _to the recipient address of the tokens. 
-   * @param _value number of tokens to be transfered. 
+   * @dev 一旦交易开始，则允许任何人转移PAY代币
+   * @param _to token的接收人地址 
+   * @param _value 转移的token数量
    */
   function transfer(address _to, uint _value) hasStartedTrading {
     super.transfer(_to, _value);
   }
 
    /**
-   * @dev Allows anyone to transfer the PAY tokens once trading has started
-   * @param _from address The address which you want to send tokens from
-   * @param _to address The address which you want to transfer to
-   * @param _value uint the amout of tokens to be transfered
+   * @dev 一旦交易开始，则允许任何人转移PAY代币
+   * @param _from 你想从哪个地址里发送token
+   * @param _to 你想把token发送到哪个地址
+   * @param _value 转移的token数量
    */
   function transferFrom(address _from, address _to, uint _value) hasStartedTrading {
     super.transferFrom(_from, _to, _value);
@@ -441,7 +441,7 @@ contract PayToken is MintableToken {
 
 /**
  * @title MainSale
- * @dev The main PAY token sale contract
+ * @dev PAY代币的销售合约
  * 
  * ABI
  * [{"constant":false,"inputs":[{"name":"_multisigVault","type":"address"}],"name":"setMultisigVault","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"authorizerIndex","type":"uint256"}],"name":"getAuthorizer","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"exchangeRate","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"altDeposits","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"recipient","type":"address"},{"name":"tokens","type":"uint256"}],"name":"authorizedCreateTokens","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"finishMinting","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_exchangeRate","type":"address"}],"name":"setExchangeRate","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_token","type":"address"}],"name":"retrieveTokens","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"totalAltDeposits","type":"uint256"}],"name":"setAltDeposit","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"start","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"recipient","type":"address"}],"name":"createTokens","outputs":[],"payable":true,"type":"function"},{"constant":false,"inputs":[{"name":"_addr","type":"address"}],"name":"addAuthorized","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"multisigVault","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_hardcap","type":"uint256"}],"name":"setHardCap","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_start","type":"uint256"}],"name":"setStart","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"token","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"_addr","type":"address"}],"name":"isAuthorized","outputs":[{"name":"","type":"bool"}],"payable":false,"type":"function"},{"payable":true,"type":"fallback"},{"anonymous":false,"inputs":[{"indexed":false,"name":"recipient","type":"address"},{"indexed":false,"name":"ether_amount","type":"uint256"},{"indexed":false,"name":"pay_amount","type":"uint256"},{"indexed":false,"name":"exchangerate","type":"uint256"}],"name":"TokenSold","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"recipient","type":"address"},{"indexed":false,"name":"pay_amount","type":"uint256"}],"name":"AuthorizedCreate","type":"event"},{"anonymous":false,"inputs":[],"name":"MainSaleClosed","type":"event"}]
@@ -463,7 +463,7 @@ contract MainSale is Ownable, Authorizable {
   uint public start = 1498302000; //new Date("Jun 24 2017 11:00:00 GMT").getTime() / 1000
 
   /**
-   * @dev modifier to allow token creation only when the sale IS ON
+   * @dev modifier 仅仅在token销售中，才允许创建token
    */
   modifier saleIsOn() {
     require(now > start && now < start + 28 days);
@@ -471,7 +471,7 @@ contract MainSale is Ownable, Authorizable {
   }
 
   /**
-   * @dev modifier to allow token creation only when the hardcap has not been reached
+   * @dev modifier 仅仅在token容量(hardcap)还未达到阈值的时候，才允许创建新token
    */
   modifier isUnderHardCap() {
     require(multisigVault.balance + altDeposits <= hardcap);
@@ -479,7 +479,7 @@ contract MainSale is Ownable, Authorizable {
   }
 
   /**
-   * @dev Allows anyone to create tokens by depositing ether.
+   * @dev 只要存入ether，允许任何人创建token
    * @param recipient the recipient to receive tokens. 
    */
   function createTokens(address recipient) public isUnderHardCap saleIsOn payable {
@@ -492,17 +492,17 @@ contract MainSale is Ownable, Authorizable {
 
 
   /**
-   * @dev Allows to set the toal alt deposit measured in ETH to make sure the hardcap includes other deposits
-   * @param totalAltDeposits total amount ETH equivalent
+   * @dev 允许设置一个调节参数，方便owner在接收非ETH的情况情况，调节铸币的数量
+   * @param 已ETH为单位的调节数量
    */
   function setAltDeposit(uint totalAltDeposits) public onlyOwner {
     altDeposits = totalAltDeposits;
   }
 
   /**
-   * @dev Allows authorized acces to create tokens. This is used for Bitcoin and ERC20 deposits
-   * @param recipient the recipient to receive tokens.
-   * @param tokens number of tokens to be created. 
+   * @dev 允许已授权的人可以创建token。这主要是供存入比特币与ERC20兼容代币使用的
+   * @param 接收新创建代币的账号
+   * @param 创建代币的数量
    */
   function authorizedCreateTokens(address recipient, uint tokens) public onlyAuthorized {
     token.mint(recipient, tokens);
@@ -510,24 +510,24 @@ contract MainSale is Ownable, Authorizable {
   }
 
   /**
-   * @dev Allows the owner to set the hardcap.
-   * @param _hardcap the new hardcap
+   * @dev 允许owner设置ICO筹集ether的最大阈值，
+   * @param _hardcap 新的最大阈值
    */
   function setHardCap(uint _hardcap) public onlyOwner {
     hardcap = _hardcap;
   }
 
   /**
-   * @dev Allows the owner to set the starting time.
-   * @param _start the new _start
+   * @dev 允许owner设置开始时间，可以执行多次
+   * @param _start 开始时间
    */
   function setStart(uint _start) public onlyOwner {
     start = _start;
   }
 
   /**
-   * @dev Allows the owner to set the multisig contract.
-   * @param _multisigVault the multisig contract address
+   * @dev 允许owner设置多重签名合约
+   * @param _multisigVault 多重签名地址
    */
   function setMultisigVault(address _multisigVault) public onlyOwner {
     if (_multisigVault != address(0)) {
@@ -536,18 +536,18 @@ contract MainSale is Ownable, Authorizable {
   }
 
   /**
-   * @dev Allows the owner to set the exchangerate contract.
-   * @param _exchangeRate the exchangerate address
+   * @dev 允许owner设置交易兑换率
+   * @param _exchangeRate 交易兑换率地址
    */
   function setExchangeRate(address _exchangeRate) public onlyOwner {
     exchangeRate = ExchangeRate(_exchangeRate);
   }
 
   /**
-   * @dev Allows the owner to finish the minting. This will create the 
-   * restricted tokens and then close the minting.
-   * Then the ownership of the PAY token contract is transfered 
-   * to this owner.
+   * @dev 允许owner完成铸币。
+   * 这将创建受约束的token，并关闭铸币。
+   * 然后把PAY合约的所有权将转移给当前owner
+   *
    */
   function finishMinting() public onlyOwner {
     uint issuedTokenSupply = token.totalSupply();
@@ -559,8 +559,8 @@ contract MainSale is Ownable, Authorizable {
   }
 
   /**
-   * @dev Allows the owner to transfer ERC20 tokens to the multi sig vault
-   * @param _token the contract address of the ERC20 contract
+   * @dev 允许owner转移ERC20代币到一个多重签名地址
+   * @param _token ERC20合约的合约地址
    */
   function retrieveTokens(address _token) public onlyOwner {
     ERC20 token = ERC20(_token);
@@ -568,8 +568,8 @@ contract MainSale is Ownable, Authorizable {
   }
 
   /**
-   * @dev Fallback function which receives ether and created the appropriate number of tokens for the 
-   * msg.sender.
+   * @dev 这是Fallback函数，该函数接受ether，并为msg.sender创建对应数量的token
+   * 
    */
   function() external payable {
     createTokens(msg.sender);
