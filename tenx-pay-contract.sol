@@ -480,7 +480,7 @@ contract MainSale is Ownable, Authorizable {
 
   /**
    * @dev 只要存入ether，允许任何人创建token
-   * @param recipient the recipient to receive tokens. 
+   * @param token接收人的地址 
    */
   function createTokens(address recipient) public isUnderHardCap saleIsOn payable {
     uint rate = exchangeRate.getRate("ETH");
