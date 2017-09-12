@@ -1,2 +1,4 @@
 # Tenx-Contracts-Explanation
-讲解Tenx智能合约
+
+Tenx智能合约类图结构
+![image](https://github.com/wangjohnny/Tenx-Contracts-Explanation/raw/master/tenx-pay-model.png)
