@@ -25,7 +25,7 @@
     ###### retrieveTokens函数，允许其他人转移符合ERC20标准的token到当前合约地址，然后这个函数再把转进来的token给转回去，我想这个功能应该是防止有人误转其他token到当前智能合约。
     ###### setMultisigVault函数设置多重签名地址。
     ###### retrieveTokens函数是留给owner执行的，把owner名下的token转移到一个多重签名的地址，这个函数可以多次重复执行。
-    ##### altDeposits是留给设置非ICO渠道收到的等量货币，用来调节筹集的虚拟货币的价值。
+    ###### altDeposits是留给设置非ICO渠道收到的等量货币，用来调节筹集的虚拟货币的价值。
 
 ### 疑问点&知识点(感觉了解这些有助于看懂智能合约的代码)：
 1. 针对不同的销售渠道，owner以不同的价格售卖token：先执行setExchangeRate方法设置兑换比率，再执行createTokens。setExchangeRate只有owner才可以执行，createTokens任何人都可以执行，理论上这里是存在漏洞的，存在时间差的问题。只要谁知道owner执行了setExchangeRate函数，只要价格合适，那黑客可以利用这个时间执行createTokens给自己铸造更便宜的Token
