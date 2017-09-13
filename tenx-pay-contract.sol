@@ -93,7 +93,7 @@ contract Authorizable {
 
   /**
    * @dev 函数：添加一个新的授权人
-   * @param _addr 将要被添加为一个新授权人的地址
+   * @param _addr 将要被添加为新授权人的地址
    */
   function addAuthorized(address _addr) external onlyAuthorized {
     authorizerIndex[_addr] = authorizers.length;
