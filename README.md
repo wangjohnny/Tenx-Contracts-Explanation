@@ -2,8 +2,8 @@
 
 本文以Tenx的ICO智能合约为解读对象，关于Tenx项目的详细信息，可以到其官网查看:http://www.tenx.tech。
 ### Tenx智能合约源码
-  智能合约地址：[0xB97048628DB6B661D4C2aA833e95Dbe1A905B280](https://etherscan.io/address/0xB97048628DB6B661D4C2aA833e95Dbe1A905B280)，点击合约地址，
-  在打开的页面上，点击名称为Contract Source的Tab页，就可以看到Tenx的智能合约的源码了
+  Tenx智能合约的链上地址：[https://etherscan.io/address/0xB97048628DB6B661D4C2aA833e95Dbe1A905B280](https://etherscan.io/address/0xB97048628DB6B661D4C2aA833e95Dbe1A905B280)，点击可以查看
+  在打开的页面上，点击名称为Contract Source的Tab页，就可以看到Tenx的智能合约的源码了，源码中的注释都是英文，我把翻译了一下，中文版地址：https://github.com/wangjohnny/Tenx-Contracts-Explanation/blob/master/tenx-pay-contract.sol。
 
 ### Tenx智能合约类图结构
 为了方便解决，我按照面向对象语言的模式，画出了智能合约里所有类(智能合约)的类图，当然Solodity语言也是有继承与实现的概念，在这张图里，我主要画出了继承、实现与引用关系。
