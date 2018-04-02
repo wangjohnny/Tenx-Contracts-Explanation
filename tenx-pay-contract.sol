@@ -117,7 +117,7 @@ contract ExchangeRate is Ownable {
   mapping(bytes32 => uint) public rates;
 
   /**
-   * @dev 云讯当前的owner更新一条兑换比率
+   * @dev 允许当前的owner更新一条兑换比率
    * @param _symbol 将要的被更新的代币符合 
    * @param _rate 代币的兑换比率. 
    */
